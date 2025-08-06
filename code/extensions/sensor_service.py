@@ -217,7 +217,7 @@ class SensorService(object):
                 
                 # Check for significant gyroscope changes (>0.1 rad/s total change)
                 if prev_gyro is None or abs(prev_gyro[0] - gyro[0]) + abs(prev_gyro[1] - gyro[1]) + abs(prev_gyro[2] - gyro[2]) >= 0.1:
-                    data.update({9: {1: self.round_if_needed(0.123456789123456789), 2: self.round_if_needed(gyro[1]), 3: self.round_if_needed(gyro[2])}})
+                    data.update({9: {1: self.round_if_needed(gyro[0]), 2: self.round_if_needed(gyro[1]), 3: self.round_if_needed(gyro[2])}})
                     prev_gyro = [gyro[0], gyro[1], gyro[2]]
                     logger.debug("Gyroscope changed: X={:.3f}, Y={:.3f}, Z={:.3f} rad/s".format(gyro[0], gyro[1], gyro[2]))
                     
