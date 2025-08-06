@@ -172,12 +172,23 @@ class SensorService(object):
         
         return accel_ms2, gyro_rads
     
-    def round_if_needed(self, value, max_digits=15):
-        s = '{:.20g}'.format(value)  # pretvara broj u string sa najviše 20 značajnih cifara
-        digits = len(s.replace('.', '').replace('-', '').lstrip('0'))  # broj značajnih cifara
-        if digits > max_digits:
-            return round(value, max_digits)
-        return value
+    def count_decimal_digits(self, value):
+        s = str(value)
+        if '.' not in s:
+            return 0
+        decimal_part = s.split('.')[1]
+        return len(decimal_part)
+    
+    def round_if_needed(self,value):
+        if self.count_decimal_digits(value) > 15:    
+            for precision in range(15, 7, -1):
+                rounded = round(value, precision)
+                digits = self.count_decimal_digits(rounded)
+                if digits <= 15:
+                    return rounded
+            return 0.0
+        else:
+            return value 
 
 
     def start_update(self):
