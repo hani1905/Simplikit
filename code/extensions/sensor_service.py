@@ -171,6 +171,14 @@ class SensorService(object):
         ]
         
         return accel_ms2, gyro_rads
+    
+    def round_if_needed(self, value, max_digits=15):
+        s = '{:.20g}'.format(value)  # pretvara broj u string sa najviše 20 značajnih cifara
+        digits = len(s.replace('.', '').replace('-', '').lstrip('0'))  # broj značajnih cifara
+        if digits > max_digits:
+            return round(value, max_digits)
+        return value
+
 
     def start_update(self):
         prev_temp1 = None
@@ -203,13 +211,13 @@ class SensorService(object):
                 
                 # Check for significant acceleration changes (>0.5 m/s² total change)
                 if prev_accel is None or abs(prev_accel[0] - accel[0]) + abs(prev_accel[1] - accel[1]) + abs(prev_accel[2] - accel[2]) > 0.5:
-                    data.update({10: {1: accel[0], 2: accel[1], 3: accel[2]}})
+                    data.update({10: {1: self.round_if_needed(accel[0]), 2: self.round_if_needed(accel[1]), 3: self.round_if_needed(accel[2])}})
                     prev_accel = [accel[0], accel[1], accel[2]]
                     logger.debug("Acceleration changed: X={:.3f}, Y={:.3f}, Z={:.3f} m/s²".format(accel[0], accel[1], accel[2]))
                 
                 # Check for significant gyroscope changes (>0.1 rad/s total change)
                 if prev_gyro is None or abs(prev_gyro[0] - gyro[0]) + abs(prev_gyro[1] - gyro[1]) + abs(prev_gyro[2] - gyro[2]) >= 0.1:
-                    data.update({9: {1: gyro[0], 2: gyro[1], 3: gyro[2]}})
+                    data.update({9: {1: self.round_if_needed(0.123456789123456789), 2: self.round_if_needed(gyro[1]), 3: self.round_if_needed(gyro[2])}})
                     prev_gyro = [gyro[0], gyro[1], gyro[2]]
                     logger.debug("Gyroscope changed: X={:.3f}, Y={:.3f}, Z={:.3f} rad/s".format(gyro[0], gyro[1], gyro[2]))
                     
